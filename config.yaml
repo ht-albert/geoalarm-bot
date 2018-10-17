@@ -1,0 +1,6 @@
+
+bot_token: '' 
+
+port: 5000
+host: 'localhost'
+proxy: 'socks5://tmp-alfa:QBnsXbyy@ru.socksy.seriyps.ru:7777'
