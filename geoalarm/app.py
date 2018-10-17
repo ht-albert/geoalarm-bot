@@ -5,7 +5,6 @@ from config import Config
 
 config = Config()
 
-
 # if bot started localhost then use proxy
 if config.is_local:
     telebot.apihelper.proxy = {
@@ -16,17 +15,28 @@ app = Flask(__name__)
 bot = telebot.TeleBot(config.bot_token)
 
 
-@app.route('/')
-def hello():
-    return 'Hello World!'
-
-
 @app.route('/' + config.bot_token, methods=['POST'])
 def webhook():
     json_string = request.get_data().decode('utf-8')
     update = telebot.types.Update.de_json(json_string)
     bot.process_new_updates([update])
     return ''
+
+
+def __send_location(chat_id, lat, lon):
+    bot.send_message(chat_id, 'Location ({}, {})'.format(lat, lon))
+
+
+@bot.message_handler(content_types=['location'])
+def location(mess):
+    __send_location(mess.chat.id, mess.location.latitude,
+                    mess.location.longitude)
+
+
+@bot.edited_message_handler(content_types=['location'])
+def location_upd(mess):
+    __send_location(mess.chat.id, mess.location.latitude,
+                    mess.location.longitude)
 
 
 @bot.message_handler(commands=['start'])
