@@ -41,11 +41,11 @@ def location_upd(mess):
 
 @bot.message_handler(commands=['start'])
 def hello_bot(mess):
-    bot.send_message(mess.chat.id, "Укажите адрес на карте {}".format(config.host))
+    bot.send_message(mess.chat.id, "Укажите адрес на карте {}/{}".format(config.host, mess.chat_id.id))
 
 
-@app.route('/', methods=['GET'])
-def hell():
+@app.route('/<int:chat_id>', methods=['GET'])
+def hell(chat_id):
     return render_template('map.html')
 
 
