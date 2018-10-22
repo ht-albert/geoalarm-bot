@@ -1,5 +1,5 @@
 import time
-from flask import Flask, request
+from flask import Flask, request, render_template
 import telebot
 from config import Config
 
@@ -41,12 +41,12 @@ def location_upd(mess):
 
 @bot.message_handler(commands=['start'])
 def hello_bot(mess):
-    bot.send_message(mess.chat.id, "Hello")
+    bot.send_message(mess.chat.id, "Укажите адрес на карте {}".format(config.host))
 
 
 @app.route('/', methods=['GET'])
 def hell():
-    return "Hellow world"
+    return render_template('map.html')
 
 
 if __name__ == '__main__':
