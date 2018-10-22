@@ -44,6 +44,11 @@ def hello_bot(mess):
     bot.send_message(mess.chat.id, "Hello")
 
 
+@app.route('/', methods=['GET'])
+def hell():
+    return "Hellow world"
+
+
 if __name__ == '__main__':
     if config.is_local:
         bot.polling()
