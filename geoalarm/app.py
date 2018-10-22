@@ -41,7 +41,7 @@ def location_upd(mess):
 
 @bot.message_handler(commands=['start'])
 def hello_bot(mess):
-    bot.send_message(mess.chat.id, "Укажите адрес на карте {}/{}".format(config.host, mess.chat_id.id))
+    bot.send_message(mess.chat.id, "Укажите адрес на карте {}/{}".format(config.host, mess.chat.id))
 
 
 @app.route('/<int:chat_id>', methods=['GET'])
