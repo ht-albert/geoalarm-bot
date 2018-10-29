@@ -2,6 +2,9 @@ import time
 from flask import Flask, request, render_template
 import telebot
 from config import Config
+from constant import HELLO_MESSAGE, WAIT_LOCATION, WAIT_LIVE
+import collections
+
 
 config = Config()
 
@@ -13,6 +16,8 @@ if config.is_local:
 
 app = Flask(__name__)
 bot = telebot.TeleBot(config.bot_token)
+data = {}
+GeoUser = collections.namedtuple("GeoUser", ['geo_status', 'name', 'lat', 'lon'])
 
 
 @app.route('/' + config.bot_token, methods=['POST'])
@@ -29,9 +34,34 @@ def __send_location(chat_id, lat, lon):
 
 @bot.message_handler(content_types=['location'])
 def location(mess):
-    __send_location(mess.chat.id, mess.location.latitude,
-                    mess.location.longitude)
+    user = data.get(mess.chat.id)
+    if user.geo_status == WAIT_LOCATION:
+        lat, lon = mess.location.latitude, mess.location.longitude
+        if not all([lat, lon]):
+            bot.send_message(mess.shat.id, "Invalid lat, lon")
 
+        keyboard = telebot.types.InlineKeyboardMarkup()
+        row = []
+        for key, val in {'no': 'Нет', 'yes': "Да"}.items():
+            row.append(telebot.types.InlineKeyboardButton(text=val,
+                                                          callback_data=key))
+        keyboard.add(*row)
+
+        bot.send_location(chat_id=mess.chat.id, latitude=lat, longitude=lon, reply_markup=keyboard)
+
+
+@bot.callback_query_handler(func=lambda call: call.data in ['no', 'yes'])
+def processing(call):
+    user = data.get(call.message.chat.id)
+    if call.data == 'yes':
+        user.geo_status = WAIT_LIVE
+        bot.edit_message_text("Поделись  геолокацие в режиме реального времени", call.from_user.id,
+                            call.message.message_id, reply_markup=None)
+        bot.answer_callback_query(call.id, text="")
+    else:
+        bot.edit_message_text("Задай место у которого тебя будить", call.from_user.id,
+                              call.message.message_id, reply_markup=None)
+        bot.answer_callback_query(call.id, text="")
 
 @bot.edited_message_handler(content_types=['location'])
 def location_upd(mess):
@@ -41,8 +71,11 @@ def location_upd(mess):
 
 @bot.message_handler(commands=['start'])
 def hello_bot(mess):
-    bot.send_message(mess.chat.id,
-                     "Укажите адрес на карте {}".format(config.host+str(mess.chat.id)))
+    user = GeoUser(geo_status=WAIT_LOCATION, name=mess.chat.first_name, lat=None, lon=None)
+    data[mess.chat.id] = user
+    bot.send_message(mess.chat.id, HELLO_MESSAGE.format(user.name))
+    bot.send_message(mess.chat.id, "Задай место у которого тебя будить")
+
 
 @app.route('/<int:chat_id>', methods=['GET'])
 def hell(chat_id):
