@@ -1,8 +1,10 @@
 
-class Singleton(object):
-    _instance = None
+class SingletonDecorator:
+    def __init__(self, cls):
+        self.cls = cls
+        self.instance = None
 
-    def __new__(class_, *args, **kwargs):
-        if not isinstance(class_._instance, class_):
-            class_._instance = object.__new__(class_, *args, **kwargs)
-        return class_._instance
+    def __call__(self, *args, **kwds):
+        if self.instance is None:
+            self.instance = self.cls(*args, **kwds)
+        return self.instance
