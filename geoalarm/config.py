@@ -1,7 +1,7 @@
 import yaml
 import os
 
-from utils import SingletonDecorator
+from geoalarm.utils import SingletonDecorator
 
 
 DB_URL = 'sqlite:////{}'.format(os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +25,7 @@ class Config:
         self.proxy = self.get_from_env_or_config(config, 'proxy')
         self.db_url = os.path.join(
             DB_URL,
+            'data',
             self.get_from_env_or_config(config, 'db_name')
         )
         self.is_local = True if self.host == 'localhost' else False
