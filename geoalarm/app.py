@@ -17,10 +17,10 @@ db = SQLAlchemy(app)
 
 
 @app.route('/' + config.bot_token, methods=['POST'])
-def web_hook():
+def webhook():
     json_string = request.get_data().decode('utf-8')
     update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update, {}])
+    bot.process_new_updates([update])
     return ''
 
 
