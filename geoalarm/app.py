@@ -1,7 +1,6 @@
 import time
 
 from flask import Flask, request
-from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from geoalarm.bot import *
@@ -15,7 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
 
 
 @app.route('/' + config.bot_token, methods=['POST'])
@@ -33,4 +31,6 @@ def start_on_server():
 
 
 if __name__ == '__main__':
+    from geoalarm.models import *
+    db.create_all()
     bot.polling() if config.is_local else start_on_server()
