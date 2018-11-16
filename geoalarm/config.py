@@ -4,8 +4,8 @@ import os
 from geoalarm.utils import SingletonDecorator
 
 
-DIR_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
-os.makedirs(DIR_DATA, exist_ok=True)
+DIR_DATA = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(DIR_DATA, 'data'), exist_ok=True)
 DB_URL = 'sqlite:////{}'.format(DIR_DATA)
 
 
