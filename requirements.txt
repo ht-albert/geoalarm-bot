@@ -21,7 +21,7 @@ PySocks==1.6.8
 pyTelegramBotAPI==3.6.6
 python-dateutil==2.7.5
 python-editor==1.0.3
-PyYAML==3.13
+PyYAML==5.4
 requests==2.19.1
 six==1.11.0
 SQLAlchemy==1.2.13
